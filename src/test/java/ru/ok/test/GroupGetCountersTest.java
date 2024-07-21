@@ -85,4 +85,31 @@ class GroupGetCountersTest {
 		assertEquals(160, jsonPath.getInt("error_code"), "Response should contain error_code 160");
 		assertTrue(jsonPath.getString("error_msg").contains("Invalid group_id"), "Response should contain error message 'Invalid group_id'");
 	}
+
+//	Проверка на высокие нагрузки (тесты производительности):
+	@Test
+	public void testGetCountersPerformance() {
+		long startTime = System.currentTimeMillis();
+
+		// Выполнение 100 запросов
+		for (int i = 0; i < 100; i++) {
+			Response response = RestAssured.given()
+					.queryParam("method", method)
+					.queryParam("access_token", accessToken)
+					.queryParam("group_id", groupId)
+					.queryParam("application_id", application_id)
+					.queryParam("application_key", application_key)
+					.queryParam("application_secret_key", application_secret_key)
+					.queryParam("counterTypes", counterTypes)
+					.queryParam("format", format)
+					.when()
+					.get(url);
+
+			assertEquals(200, response.getStatusCode(), "Expected status code 200");
+		}
+
+		long endTime = System.currentTimeMillis();
+		long duration = endTime - startTime;
+		System.out.println("Performance test duration: " + duration + "ms");
+	}
 }
